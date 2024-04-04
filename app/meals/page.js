@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import classes from "./page.module.css";
 import MealsGrid from "@/components/meals/meals-grid";
 import sql from "better-sqlite3";
+import MealsLoadingPage from "./loading-out";
 
-const MealsPage = async () => {
+const GetAllMeals = async () => {
   const db = sql("meals.db");
   //get all meals from db
   async function getMeals() {
@@ -14,6 +15,10 @@ const MealsPage = async () => {
 
   const meals = await getMeals();
 
+  return <MealsGrid meals={meals}></MealsGrid>;
+};
+
+const MealsPage = () => {
   return (
     <>
       <header className={classes.header}>
@@ -30,8 +35,11 @@ const MealsPage = async () => {
           <Link href="/meals/share">Share Your Favorite Recipe</Link>
         </p>
       </header>
+
       <main className={classes.main}>
-        <MealsGrid meals={meals}></MealsGrid>
+        <Suspense fallback={<MealsLoadingPage></MealsLoadingPage>}>
+          <GetAllMeals></GetAllMeals>
+        </Suspense>
       </main>
     </>
   );
