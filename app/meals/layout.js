@@ -3,7 +3,7 @@ import React from "react";
 const MealsLayout = ({ children }) => {
   return (
     <div>
-      <p>Meals Layout</p>
+      {/* <p>Meals Layout</p> */}
       {children}
     </div>
   );

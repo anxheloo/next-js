@@ -5,12 +5,13 @@ import MealsGrid from "@/components/meals/meals-grid";
 import sql from "better-sqlite3";
 import MealsLoadingPage from "./loading-out";
 
+const db = sql("meals.db");
+
 const GetAllMeals = async () => {
-  const db = sql("meals.db");
   //get all meals from db
   async function getMeals() {
-    await new Promise((promise) => setTimeout(promise, 2000));
-    throw new Error("Loading meals failed!");
+    // await new Promise((promise) => setTimeout(promise, 2000));
+    // throw new Error("Loading meals failed!");
     return db.prepare(`SELECT * FROM meals`).all();
   }
 
@@ -18,6 +19,10 @@ const GetAllMeals = async () => {
 
   return <MealsGrid meals={meals}></MealsGrid>;
 };
+
+export function getMeal(slug) {
+  return db.prepare("SELECT * FROM meals WHERE slug = ?").get(slug);
+}
 
 const MealsPage = () => {
   return (
