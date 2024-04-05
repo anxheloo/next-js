@@ -10,6 +10,7 @@ const GetAllMeals = async () => {
   //get all meals from db
   async function getMeals() {
     await new Promise((promise) => setTimeout(promise, 2000));
+    throw new Error("Loading meals failed!");
     return db.prepare(`SELECT * FROM meals`).all();
   }
 
