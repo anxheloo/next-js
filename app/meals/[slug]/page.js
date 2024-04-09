@@ -4,6 +4,21 @@ import classes from "./page.module.css";
 import { getMeal } from "../page";
 import { notFound } from "next/navigation";
 
+// to generate dynamic metadata we use this function below.s
+export async function generateMetadata({ params }) {
+  const meal = getMeal(params.slug);
+
+  if (!meal) {
+    // this calles the closest notFound page
+    notFound();
+  }
+
+  return {
+    title: meal.title,
+    description: meal.summary,
+  };
+}
+
 const MealDetailsPage = ({ params }) => {
   const meal = getMeal(params.slug);
 

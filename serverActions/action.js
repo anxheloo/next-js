@@ -5,7 +5,13 @@ import slugify from "slugify";
 import xss from "xss";
 import fs from "node:fs";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+
 const db = sql("meals.db");
+
+function isInvalidText(text) {
+  return !text || text.trim() === "";
+}
 
 async function saveMeal(meal) {
   // we turn the title to a slug for further use
@@ -44,16 +50,34 @@ async function saveMeal(meal) {
   ).run(meal);
 }
 
-export async function shareMeal(formData) {
+export async function shareMeal(prevState, formData) {
   const meal = {
     title: formData.get("title"),
     summary: formData.get("summary"),
+    instructions: formData.get("instructions"),
     image: formData.get("image"),
     creator: formData.get("name"),
     creator_email: formData.get("email"),
   };
 
-  await saveMeal(meal);
+  if (
+    isInvalidText(meal.title) ||
+    isInvalidText(meal.summary) ||
+    isInvalidText(meal.instructions) ||
+    isInvalidText(meal.creator) ||
+    isInvalidText(meal.creator_email) ||
+    !meal.creator_email.includes("@") ||
+    !meal.image ||
+    meal.image.size === 0
+  ) {
+    // throw new Error("Invalid Input");
+    return { message: "Invalid input" };
+  }
 
-  redirect("/");
+  await saveMeal(meal);
+  // A build in function to throw away existing cache and get the new one with the new meal added.
+  // By default "next" caches all pages to static when we run build for production. And prevents us from seeing new meals.
+  // Thats why we use this function
+  revalidatePath("/meals"); // we can also add another parameter for example:  revalidatePath("/meals", "layout") -> to revalidate all the pages of meals.
+  redirect("/meals");
 }

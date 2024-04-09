@@ -7,6 +7,12 @@ import MealsLoadingPage from "./loading-out";
 
 const db = sql("meals.db");
 
+//we can add metadata to evey page to give infos about that page
+export const metadata = {
+  title: "All Meals",
+  description: "Browse the delicious meals by our comunity.",
+};
+
 const GetAllMeals = async () => {
   //get all meals from db
   async function getMeals() {
